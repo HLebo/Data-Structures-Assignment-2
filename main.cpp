@@ -2,6 +2,14 @@
 
 using namespace std;
 
+char switchValue(char c){
+    if(c == '0'){
+        return '1';
+    }
+    else
+        return '0';
+}
+
 string lights(string row, int n, string &solution){
 
     if(n == 1){
@@ -30,7 +38,12 @@ string lights(string row, int n, string &solution){
     }
 
     else if(n == 3){
-        return "";
+        if(row[2] == '1'){
+            row[0] = switchValue(row[0]);
+            row[1] = switchValue(row[1]);
+            row[2] = switchValue(row[2]);
+        }
+        return row;
     }
 
     else{
