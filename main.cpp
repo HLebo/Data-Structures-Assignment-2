@@ -9,6 +9,9 @@ string lights(string row, int n, string &solution){
             row[0] = '0';
             solution = "1";
         }
+        else{
+            solution = "Already solved";
+        }
         return row;
     }
 
@@ -38,9 +41,12 @@ string lights(string row, int n, string &solution){
 
 int main()
 {
+
     string userRow;
     int rowLength;
     string output;
+
+    do{
 
     cout << "Please enter the row length: ";
     cin >> rowLength;
@@ -51,6 +57,8 @@ int main()
     lights(userRow, rowLength, output);
 
     cout << "The solution is " << output << endl;
+
+    } while(rowLength != 0);
 
     return 0;
 }
