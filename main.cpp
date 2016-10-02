@@ -9,11 +9,21 @@ string lights(string row, int n, string &solution){
             row[0] = '0';
             solution = "1";
         }
-        return solution;
+        return row;
     }
 
     else if(n == 2){
-        return "";
+        if(row == "00"){
+            solution = "Already solved";
+        }
+        else if(row == "11"){
+            row = "00";
+            solution = "1";
+        }
+        else{
+            solution = "NO SOLUTION";
+        }
+        return row;
     }
 
     else if(n == 3){
@@ -21,7 +31,6 @@ string lights(string row, int n, string &solution){
     }
 
     else{
-
         return "";
     }
 
