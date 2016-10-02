@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -12,7 +14,7 @@ char switchValue(char c){
 
 string lights(string row, int n, string &solution){
 
-    if(n == 1){
+    if(row.size() == 1){
         if(row[0] == '1'){
             row[0] = '0';
             solution = "1";
@@ -23,7 +25,7 @@ string lights(string row, int n, string &solution){
         return row;
     }
 
-    else if(n == 2){
+    else if(row.size() == 2){
         if(row == "00"){
             solution = "Already solved";
         }
@@ -37,17 +39,26 @@ string lights(string row, int n, string &solution){
         return row;
     }
 
-    else if(n == 3){
+    else if(row.size() == 3){
         if(row[2] == '1'){
             row[0] = switchValue(row[0]);
             row[1] = switchValue(row[1]);
             row[2] = switchValue(row[2]);
+
+            int x = n-1;
+            std::ostringstream oss;
+            oss << x;
+            solution = oss.str();
         }
         return row;
     }
 
     else{
-        return "";
+        string subRow = row.substr(1,row.size());
+        string row_prev = lights(subRow, n, solution);
+        row_prev = row[0] + row_prev;
+
+        return row_prev;
     }
 
 }
@@ -67,7 +78,7 @@ int main()
     cout << "Please enter the light puzzle: ";
     cin >> userRow;
 
-    lights(userRow, rowLength, output);
+    cout << "Ending row " << lights(userRow, rowLength, output) << endl;
 
     cout << "The solution is " << output << endl;
 

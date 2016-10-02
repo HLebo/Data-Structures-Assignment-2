@@ -1,4 +1,6 @@
 # depslib dependency file v1.0
-1475441642 source:c:\users\owner\desktop\data-structures-assignment-2\main.cpp
+1475444448 source:c:\users\owner\desktop\data-structures-assignment-2\main.cpp
 	<iostream>
+	<string>
+	<sstream>
 
