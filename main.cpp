@@ -55,6 +55,7 @@ string lights(string row, int n, string &solution){
         }
 
         else*/
+
         if(row[2] == '1'){
             //hitting the middle light
             row[0] = switchValue(row[0]);
@@ -65,7 +66,7 @@ string lights(string row, int n, string &solution){
             int x = n-1;
             std::ostringstream oss;
             oss << x;
-            solution = oss.str();
+            solution = oss.str() + ' ' + solution;
         }
         return row;
     }
@@ -93,12 +94,40 @@ string lights(string row, int n, string &solution){
             solution = oss.str() + ' ' + solution;
         }
 
+        //once row is back to original length
         if(n == newRow.size()){
             if(newRow[1] == '1'){
                 newRow[0] = switchValue(newRow[0]);
                 newRow[1] = switchValue(newRow[1]);
 
                 solution = "1 " + solution;
+            }
+
+            if(newRow[0] == '1'){
+                if((n-1)%3 == 1){
+                    solution = "NO SOLUTION";
+                }
+                else{
+                    newRow[n-1] = switchValue(newRow[n-1]);
+                    newRow[n-2] = switchValue(newRow[n-2]);
+
+                    //recording the index of the one we hit
+                    std::ostringstream oss;
+                    oss << n;
+                    solution = oss.str() + ' ' + solution;
+
+                    newRow = lights(newRow, n, solution);
+
+                    //removing duplicates from solution
+                    for(int i = 0; i < solution.size(); i += 2){
+                        for(int k = i + 2; k < solution.size(); k += 2){
+                            if(solution[i] == solution[k]){
+                                solution.erase(i,2);
+                                solution.erase(k,2);
+                            }
+                        }
+                    }
+                }
             }
         }
 
