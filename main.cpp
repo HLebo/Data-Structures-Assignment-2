@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -14,47 +15,40 @@ char switchValue(char c){
 }
 
 //recursive lights function
-string lights(string row, int n, string &solution){
+string lights(string row, int n, int solution[40], int &state){
 
     //base cases
     if(row.size() == 1){
         if(row[0] == '1'){
             row[0] = '0';
-            solution = "1";
+            solution[0] = 1;
         }
         else{
-            solution = "Already solved";
+            //already solved
+            state = 3;
         }
         return row;
     }
 
     else if(row.size() == 2){
         if(row == "00"){
-            solution = "Already solved";
+            //already solved
+            state = 3;
         }
-        else if(row[1] == '1'){
+        else if(row == "11"){
             row[0] = switchValue(row[0]);
             row[1] = switchValue(row[1]);
 
-            std::ostringstream oss;
-            oss << n;
-            solution = oss.str();
+            solution[0] = 1;
         }
         else{
-            solution = "NO SOLUTION";
+            //no solution
+            state = 2;
         }
         return row;
     }
 
     else if(row.size() == 3){
-
-        /*if(n == 4){
-            string subRow = row.substr(1,row.size());
-            string row_prev = lights(subRow, n, solution);
-            row_prev = row[0] + row_prev;
-        }
-
-        else*/
 
         if(row[2] == '1'){
             //hitting the middle light
@@ -63,10 +57,12 @@ string lights(string row, int n, string &solution){
             row[2] = switchValue(row[2]);
 
             //recording the index of the one we hit
-            int x = n-1;
-            std::ostringstream oss;
-            oss << x;
-            solution = oss.str() + ' ' + solution;
+            int i = 0;
+            while(i < 40 && solution[i] != 0){
+                i++;
+            }
+
+            solution[i] = n-1;
         }
         return row;
     }
@@ -77,7 +73,7 @@ string lights(string row, int n, string &solution){
         string subRow = row.substr(1,row.size());
 
         //recursion
-        subRow = lights(subRow, n, solution);
+        subRow = lights(subRow, n, solution, state);
 
         //reconstructing the row
         string newRow = row[0] + subRow;
@@ -89,9 +85,11 @@ string lights(string row, int n, string &solution){
 
             //recording the index of the one we hit
             int x = n - newRow.size() + 2;
-            std::ostringstream oss;
-            oss << x;
-            solution = oss.str() + ' ' + solution;
+            int i = 0;
+            while(i < 40 && solution[i] != 0){
+                i++;
+            }
+            solution[i] = x;
         }
 
         //once row is back to original length
@@ -100,30 +98,41 @@ string lights(string row, int n, string &solution){
                 newRow[0] = switchValue(newRow[0]);
                 newRow[1] = switchValue(newRow[1]);
 
-                solution = "1 " + solution;
+                //searching for last element of solution
+                int i = 0;
+                while(i < 40 && solution[i] != 0){
+                    i++;
+                }
+
+                //add last result to solution
+                solution[i] = 1;
             }
 
             if(newRow[0] == '1'){
                 if((n-1)%3 == 1){
-                    solution = "NO SOLUTION";
+                    //no solution
+                    state = 2;
                 }
                 else{
                     newRow[n-1] = switchValue(newRow[n-1]);
                     newRow[n-2] = switchValue(newRow[n-2]);
 
                     //recording the index of the one we hit
-                    std::ostringstream oss;
-                    oss << n;
-                    solution = oss.str() + ' ' + solution;
+                    int i = 0;
+                    while(i < 40 && solution[i] != 0){
+                        i++;
+                    }
+                    solution[i] = n;
 
-                    newRow = lights(newRow, n, solution);
+                    //run recursive algorithm again attempting to remove the single leftover 1 located on left end
+                    newRow = lights(newRow, n, solution, state);
 
                     //removing duplicates from solution
-                    for(int i = 0; i < solution.size(); i += 2){
-                        for(int k = i + 2; k < solution.size(); k += 2){
+                    for(int i = 0; i < 40; i++){
+                        for(int k = i+1; k < 40; k++){
                             if(solution[i] == solution[k]){
-                                solution.erase(i,2);
-                                solution.erase(k,2);
+                                solution[i] = 0;
+                                solution[k] = 0;
                             }
                         }
                     }
@@ -139,26 +148,53 @@ string lights(string row, int n, string &solution){
 int main()
 {
 
+    //user input variables
     string userRow;
     int rowLength;
-    string output;
 
     do{
 
-    //asking user for input
-    cout << "Please enter the row length: ";
-    cin >> rowLength;
+        //asking user for input
+        cout << "Please enter the row length: ";
+        cin >> rowLength;
 
-    cout << "Please enter the light puzzle: ";
-    cin >> userRow;
+        cout << "Please enter the light puzzle: ";
+        cin >> userRow;
 
-    //ensure output is empty before calling recursive function
-    output = "";
+        //assume is solvable
+        int state = 1;
 
-    //printing output
-    cout << "Ending row " << lights(userRow, rowLength, output) << endl;
+        //ensure output is empty before calling recursive function
+        int output[40] = {0};
 
-    cout << "The solution is " << output << endl << endl;
+        //calling recursive function
+        lights(userRow, rowLength, output, state);
+
+        //sorting output
+        sort(output, output + 40);
+
+        //printing output
+        if(state == 2){
+            cout << "NO SOLUTION" << endl << endl;
+        }
+
+        else if(state == 3 || output[39] == 0){
+            cout << "Already solved" << endl << endl;
+        }
+
+        else{
+            cout << "The solution is ";
+
+            for(int i = 0; i < 40; i++){
+                if(output[i] != 0){
+                    std::ostringstream oss;
+                    oss << output[i];
+                    cout << oss.str() << " ";
+                }
+
+            }
+            cout << endl << endl;
+        }
 
     } while(rowLength != 0);
 
